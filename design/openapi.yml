@@ -1,0 +1,169 @@
+openapi: "3.0.3"
+info:
+  title: "PSBAPP Venues API"
+  version: "2021-05-27"
+
+paths:
+  /p/{placeId}:
+    parameters:
+      - in: path
+        schema:
+          type: string
+        name: placeId
+        required: true
+    get:
+      tags: [End User]
+      description: Ottieni informazioni su un luogo
+      responses:
+        200:
+          description: Informazioni sul luogo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceInfo"
+        444:
+          description: Luogo non esistente
+  /categories:
+    get:
+      tags: [End User]
+      description: Ottieni la lista di categorie
+      responses:
+        200:
+          description: Lista di categorie
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoriesList"
+  ##### SEARCH API
+  /search/p:
+    get:
+      tags: [End User, Search]
+      parameters:
+        - name: q
+          in: query
+          description: >-
+            The text for full text search on all fields
+          required: false
+          schema:
+            type: string
+        - name: near
+          in: query
+          description: >-
+            Latitude and longitude for the search
+          required: false
+          schema:
+            type: string
+            example: 45.1234,11.3749
+            pattern: '\d{1,2}(.\d*)\,\d{1,2}(.\d*)'
+        - name: cat
+          in: query
+          description: >-
+            Category filter for the search
+          required: false
+          schema:
+            type: string
+      summary: Search places
+      description: >-
+        At least one of the 'q' or the 'near' parameters is required
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaceList"
+
+components:
+  schemas:
+    CategoriesList:
+      type: object
+      required:
+        - categories
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+    PlaceList:
+      type: object
+      properties:
+        places:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaceInfo"
+    PlaceInfo:
+      type: object
+      properties:
+        placeId:
+          type: string
+          example: thn1
+        istatCode:
+          type: string
+          example: "24100"
+        category:
+          type: string
+          example: Scuola Secondaria
+        name:
+          type: string
+          example: Liceo Statale Corradini
+        streetName:
+          type: string
+          example: Via Milani
+        streetNumber:
+          type: string
+          example: "1"
+        city:
+          type: string
+          example: Thiene
+        province:
+          type: string
+          example: VI
+        description:
+          type: string
+          example: Teatro
+        availability:
+          type: string
+          example: Su prenotazione
+        equipment:
+          type: string
+          example: Impianto audio
+        maxCapacity:
+          type: string
+          example: 300
+        size:
+          type: string
+          example: 66
+        collocation:
+          type: string
+          example: Interno
+        accessibility:
+          type: string
+          example: Accessibile ai disabili
+        wifi:
+          type: string
+          example: Sì
+        website:
+          type: string
+          format: uri
+          example: "https://avatarlab.it/119-2/"
+        contact:
+          type: string
+          example: Comune di Thiene ufficio cultura
+        emailAddress:
+          type: string
+          format: email
+          example: example@example.com
+        lat:
+          type: string
+          example: 45.50593824
+        lon:
+          type: string
+          example: 12.293843284
+        searchable:
+          type: boolean
+
+tags:
+  - name: End User
+    description: Chiamate utilizzate dall'end user, non sono autenticate.
+  - name: Search
+    description: Chiamate per cercare i luoghi
